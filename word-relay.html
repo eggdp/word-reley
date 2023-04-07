@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>끝말 잇기</title>
+  <style>
+
+  </style>
+</head>
+<body>
+<div><span id="order">1</span>번째 참가자</div>
+<div>제시어: <span id="word"></span></div>
+<input type="text">
+<button>입력</button>
+<button class="btn">버튼2</button>
+<button class="btn">버튼3</button>
+<script>
+  const number = parseInt(prompt('몇 명이 참가하나요?'), 10);
+  const $input = document.querySelector('input');
+  const $button = document.querySelector('button');
+  const $word = document.querySelector('#word');
+  let word; //제시어
+  let newWord; // 새로 입력한 단어
+
+  const onClickButton = () => {
+    if(!word){       //비어 있다.
+      word = newWord ; // 입력한 단어가 제시어(word)가된다.
+      $word.textContent = word;
+      $input.value = '';
+      const order = parseInt($order.textContent);//현재 순서
+      if( order + 1 >number){
+        $order.textContent = 1; //여기는 자동 형변환됨 number로 이유는 아직모르겟다.
+      }else{
+        $order.textContent = order + 1;
+      }
+    }else{
+      //비어 있지 않다.(첫번째가 아니다.)
+      if(word[word.length -1] === newWord[0]){
+        word = newWord;
+        $word.textContent = word;
+        $input.value = '';
+      }else{ //일치하지 않으면
+
+      }
+    }
+  };
+  const onInput = (event) =>{
+      newWord = event.target.value;
+  };
+  
+  $button.addEventListener('click', onClickButton);
+  $input.addEventListener('input', onInput); 
+</script>
+</body>
+</html> 
