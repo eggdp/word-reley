@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>숫자 야구</title>
+</head>
+<body>
+  <form id="form">
+    <input id="input" type="text" />
+    <button>숫자 확인</button>
+  </form>
+  <div id="logs"></div>
+  <script>
+    const $input = document.querySelector('#input');
+    const $form = document.querySelector('#form');
+    const $logs = document.querySelector('#logs');
+
+    // 숫자야구 - 랜덤 숫자 4자리 
+    const numbers = []; // 랜덤 숫자가 들어갈 배열
+    for(let n = 0; n < 9; n++){
+      numbers.push( n + 1 );
+    }
+    const answer =[]; // 랜덤값 숫자 4개가 들어갈 배열
+    for(let n = 0; n < 4; n++){ // 1 ~ 9 까지 숫자가 생성되야함
+      //밑에 numbers.length안하면 undefinded가 뜨는데 뽑은 index를 numbers 요소제거를 안해줘서 그런듯하다.
+       const index = Math.floor(Math.random() * numbers.length); 
+       answer.push(numbers[index]); // number의 값뽑아서 asnwer에 삽입
+       numbers.splice(index , 1 ); // 랜덤4숫자 겹치치않도록 뽑은 index값 제거
+    }
+    console.log(answer);
+
+    //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+    //사용자 입력값 검사 코드
+    //1. 숫자가 4자리인지 2. 중복된 숫자가 없는지 3. 이미 입력한 숫자가 아닌지.
+    const tries = []; // input 4자리를 담은 배열
+    function checkInput(input){
+      if(input.length !== 4 ){
+        return alert('4자리 숫자를 입력해주세요');
+      }
+      if(new Set(input).size !== 4){
+        return alert('중복된 숫자가 있습니다.');
+      }
+      if(tries.includes(input)){
+        return alert('이미 시도한 값입니다.');
+      }
+      return true; // 3개의 반복문을 통과했다면 성공.
+    }
+    let out = 0; //확인 버튼을 누르는순간 form안에 out은 초기화되므로 밖에 변수를 둬야한다.
+    // value = 사용자의 입력 값
+    $form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const value = $input.value;
+      $input.value = '';
+      if (!checkInput(value)) {
+        return;
+      }
+      if (answer.join('') === value) { //입력값 문제 X  1. 4자리 맞으면 홈런 
+        $logs.textContent = '홈런!';
+        return;
+      }
+      if (tries.length >= 9) {
+        const message = document.createTextNode(`패배! 정답은 ${answer.join('')}`);
+        $logs.appendChild(message);
+        return;
+      }
+      // 몇 스트라이크 몇 볼인지 검사
+      let strike = 0;
+      let ball = 0;
+      // 랜덤 answer = 3569 사용자 value = 1234
+      for(let i = 0; i < answer.length; i++){ // answer의 index와 value의 index가 같으면 strike
+        const index = value.indexOf(answer[i]);
+        if( index > -1 ){
+          if( index === i){
+            strike +=1;
+          }else{
+            ball +=1;
+          }
+        }
+      }//st , ba 둘다 0 이면 아웃  , 아웃 3번이면 패배. 근데 확인 버튼을 누르는순간 form안에 out은 초기화되므로 밖에 변수를 둬야한다.
+      if( strike === 0 && ball === 0){
+        out ++;
+        $logs.append(`${value}: 아웃`, document.createElement('br'));
+      }else{
+        $logs.append(`${value} : ${strike} : 스트라이크 ${ball} : 볼 `, document.createElement('br'));
+      }
+      if( out === 3){
+        const message = document.createTextNode(`패배! 정답은 ${answer.join('')}`);
+        $logs.appendChild(message);
+        return;
+      }
+      tries.push(value);
+    });
+  </script>
+</body>
+</html>
