@@ -13,6 +13,7 @@
     height: 200px;
   }
 </style>
+
 <body>
   <div id="computer"></div>
   <div>
@@ -43,26 +44,52 @@
         computerChoice = 'rock';
       } else if (computerChoice === 'rock') {
         computerChoice = 'paper';
-      } else if(computerChoice === 'paper'){
+      } else if (computerChoice === 'paper') {
         computerChoice = 'scissors';
       }
       $computer.style.background = ` url(${IMG_URL}) ${rspX[computerChoice]} 0 `;
       $computer.style.backgroundSize = 'auto 200px';
     }
-    let intervalId = setInterval(changeComputerHand , 50);
+    let intervalId = setInterval(changeComputerHand, 50);
 
-    const clickButton = () =>{
-      clearInterval(intervalId);
-      //점수 계산 및 화면 표시
-      setTimeout(() =>{
-        intervalId = setInterval(changeComputerHand ,50);
-      }, 1000);
-    };
-    $rock.addEventListener('click',clickButton);
-    $scissors.addEventListener('click',clickButton);
-    $paper.addEventListener('click',clickButton);
+    const scoreTable = { // 두개 빼서 0이면 비기고 1 or -2 이면 승리 2 or-1 패배
+      rock : 0,
+      scissors : 1,
+      paper : -1,
+    }
+    let clickable = true;
+    let score = 0;
+    const clickButton = () => {
+      if (clickable) {
+        clearInterval(intervalId);
+        clickable = false; //false인 동안에는 버튼을 클릭할수없게한다.
+        //점수 계산 및 화면 표시
+        const myChoice = event.target.id;
+        const myScore = scoreTable[myChoice];
+        const computerScore = scoreTable[computerChoice];
+        const diff = myScore - computerScore;
+        let message;
+        if([2,-1].includes(diff)){ // diff === 2 || diff === -1
+          score +=1;
+          message = '승리';
+        }else if([-2,1].includes(diff)){ // diff === -2 || diff === 1
+          score -=1;
+          message = '패배';
+        }else{
+          message = '무승부';
+        }
+        $score.textContent = `${message} 총: ${score}점`; 
+            setTimeout(() => {
+              clickable = true;
+              intervalId = setInterval(changeComputerHand, 50);
+            }, 1000);
+          }
+        };
+        $rock.addEventListener('click', clickButton);
+        $scissors.addEventListener('click', clickButton);
+        $paper.addEventListener('click', clickButton);
 
-  
+
   </script>
 </body>
 
